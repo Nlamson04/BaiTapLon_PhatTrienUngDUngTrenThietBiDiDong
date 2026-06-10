@@ -163,4 +163,19 @@ Tìm khối lệnh tên là Txt_SoB.Text kéo ra gắn vào ô trống thứ hai
 Mở Android Studio -> Chọn New Project -> Empty Views Activity
 ## 2.1 AndroidManifest.xml là gì?
 - Nó là "giấy khai sinh" và là bảng cấu hình của ứng dụng. Mọi Activity bạn tạo ra, mọi quyền truy cập hệ thống đều phải khai báo ở đây.
-- 
+- xin quyền dùng Internet (phục vụ cho tính năng WebView), gõ dòng lệnh này vào # <uses-permission android:name="android.permission.INTERNET" />
+# <img width="1452" height="981" alt="image" src="https://github.com/user-attachments/assets/29c74ac0-3217-4b67-9690-b49291edc6f5" />
+## 2.2 Vòng đời ứng dụng & File Code Java
+- Ứng dụng Android viết bằng ngôn ngữ Java. Nó có một vòng đời trải qua nhiều trạng thái (mở app, ẩn xuống nền, tắt app). Hàm onCreate luôn có sẵn khi tạo project vì đây là bước đầu tiên trong vòng đời ứng dụng khi màn hình được tạo ra; nó chịu trách nhiệm khởi tạo các biến và liên kết giao diện người dùng. <br>
+- Mở thư mục: MainActivity.java
+- mọi code tương tác cơ bản ở giai đoạn đầu sẽ viết bên trong hàm này: onCreate
+# <img width="1397" height="561" alt="image" src="https://github.com/user-attachments/assets/ebc30cd6-9b41-4797-bbe3-5e123964d438" />
+## 2.3. Thiết kế giao diện (Layout) & Tránh Hardcode
+- Giao diện được mô tả bằng file XML nằm trong thư mục res/layout. Để tránh hardcode (viết thẳng giá trị chết vào giao diện), bạn phải lưu các thuộc tính text vào một nơi khác rồi tham chiếu tới nó <br>
+** Ưu điểm của việc này là hệ điều hành (OS) sẽ tự động lấy giá trị tham chiếu theo Location (Vị trí), Language (Ngôn ngữ), Theme (Chủ đề) của người dùng. Việc hỗ trợ auto này giúp app tự động chuyển đổi ngôn ngữ hoặc giao diện sáng/tối mà lập trình viên không cần viết thêm code <br>
+- Mở file res/values/strings.xml: Thêm một dòng: <string name="loi_chao">Xin chào bạn</string> <br>
+# <img width="822" height="341" alt="image" src="https://github.com/user-attachments/assets/70d11603-979f-4bbc-9171-9e9df6f75c0f" />
+- Tiếp theo, mở file giao diện res/layout/activity_main.xml: Khi tạo một chữ hiển thị, thay vì viết android:text="Xin chào bạn" (đây là hardcode),viết cú pháp tham chiếu: android:text="@string/loi_chao" <br>
+# <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a3b79edb-5e0d-4059-a82b-b89d1334b4c1" />
+
+
