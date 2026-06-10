@@ -190,12 +190,386 @@ Mở Android Studio -> Chọn New Project -> Empty Views Activity
 # <img width="1077" height="978" alt="image" src="https://github.com/user-attachments/assets/129348c9-792c-4293-9f48-e178a1482d0d" />
 # <img width="1117" height="231" alt="image" src="https://github.com/user-attachments/assets/327daeaa-7fb9-451f-8580-14c9df4c1224" />
 # PHẦN 3: TẠO THÊM 2 ACTIVITY MỚI ( ACTIVITY 2, ACTIVITY3 )
+** B1
 - Mặc định khi tạo dự án, đã có sẵn màn hình thứ nhất là MainActivity. Bây giờ ta cần tạo thêm Activity 2 và Activity 3
 -Cách làm: Chuột phải vào thư mục chứa code Java của bạn (ví dụ: com.example.baitaplon)
 --> Chọn New --> Activity --> Empty Views Activity.
 - Tạo cái thứ nhất đặt tên là: GiaiToanActivityLàm tương tự tạo cái thứ hai đặt tên là: WebViewActivity
-BƯỚC 1: CHI TIẾT HƯỚNG DẪN TỪNG ACTIVITY (CODE & LAYOUT)
-- 1. ACTIVITY 1: MÀN HÌNH GIỚI THIỆU (ABOUT SCREEN)
+## KẾT QUẢ
+- thống tự sinh: Android Studio sẽ tự động tạo ra 2 file Java trong thư mục code và 2 file giao diện XML tương ứng (activity_giai_toan.xml và activity_web_view.xml) trong thư mục res/layout
+# <img width="563" height="932" alt="image" src="https://github.com/user-attachments/assets/9ed5a906-9734-4a89-895a-61a4e65d6929" />
+** B2
+CẤU HÌNH HỆ THỐNG VÀ XIN QUYỀN TRUY CẬP INTERNET
+-Hướng dẫn thực hiện:
+** Mở thư mục app --> manifests --> Click đúp mở file AndroidManifest.xml.
+- Tiến hành chèn thêm các dòng xin quyền Internet (INTERNET, ACCESS_NETWORK_STATE) và thuộc tính cho phép chạy mạng không mã hóa (usesCleartextTraffic="true").
+
+## Mã nguồn hoàn chỉnh AndroidManifest.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.example.baitaplon">
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.BaitapLon"
+        android:usesCleartextTraffic="true"> <activity
+            android:name=".WebViewActivity"
+            android:exported="false" />
+        <activity
+            android:name=".GiaiToanActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
+
+** B3: 
+QUAN TRỌNG - THAY ĐỔI THÔNG TIN BẢN THÂN TRONG TÀI NGUYÊN CHUỖI
+Hướng dẫn thực hiện:
+- Vào thư mục app --> res --> values --> Mở file strings.xml.
+- Xóa sạch code cũ, dán đè đoạn code dưới đây để cập nhật tên Nguyễn Lam Sơn và MSSV K225480106076 tập trung tại đây nhằm tránh lỗi hardcode text.
+
+## Mã nguồn hoàn chỉnh strings.xml:
+
+<resources>
+    <string name="app_name">BaitapLon</string>
+    <string name="title_btl">BÀI TẬP LỚN MÔN TEE0419</string>
+    <string name="info_sv">Họ và tên: Nguyễn Lam Sơn\nMSSV: K225480106076</string>
+    <string name="btn_giai_toan">Mở Màn Hình Giải Toán</string>
+    <string name="btn_webview">Mở Màn Hình Web View</string>
+    <string name="title_assets">DỮ LIỆU ĐỌC TỪ ASSETS (APP1):</string>
+    <string name="loading_assets">Đang tải dữ liệu từ tệp tin...</string>
+    <string name="title_pt">Giải phương trình ax + b = 0</string>
+    <string name="hint_a">Nhập hệ số a</string>
+    <string name="hint_b">Nhập hệ số b</string>
+    <string name="hint_name">Nhập tên của bạn</string>
+    <string name="btn_tinh">Tính toán &amp; Gửi API</string>
+    <string name="text_kq">Kết quả hiển thị tại đây</string>
+</resources>
+
+** B4:
+- LẬP TRÌNH ĐIỀU HƯỚNG VÀ ĐỌC TỆP ASSETS TẠI MÀN HÌNH CHÍNH
+- Hướng dẫn thực hiện: Mở file MainActivity.java và viết code bắt sự kiện click cho 2 nút bấm để chuyển màn hình (Intent) sang Activity giải toán và WebView, đồng thời đọc file data.txt từ thư mục Assets.
+
+## Mã nguồn hoàn chỉnh MainActivity.java:
+
+package com.example.baitaplon;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+import androidx.appcompat.app.AppCompatActivity;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button btnGiaiToan = findViewById(R.id.btn_den_giai_toan);
+        Button btnWebView = findViewById(R.id.btn_den_webview);
+        TextView tvAssets = findViewById(R.id.tv_hien_thi_assets);
+
+        // Chuyển sang Activity Giải Toán
+        btnGiaiToan.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, GiaiToanActivity.class);
+            startActivity(intent);
+        });
+
+        // Chuyển sang Activity WebView
+        btnWebView.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, WebViewActivity.class);
+            startActivity(intent);
+        });
+
+        // Đọc tệp tin data.txt từ Assets (Offline)
+        StringBuilder chuoiKhaiThac = new StringBuilder();
+        try {
+            InputStream is = getAssets().open("data.txt");
+            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            String dongDuLieu;
+            while ((dongDuLieu = reader.readLine()) != null) {
+                chuoiKhaiThac.append(dongDuLieu).append("\n");
+            }
+            reader.close();
+            tvAssets.setText(chuoiKhaiThac.toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+            tvAssets.setText("Lỗi: Không tìm thấy tệp data.txt trong thư mục Assets!");
+        }
+    }
+}
+
+## Trong bài này em Khởi tạo và Cấu hình Môi trường Thiết bị Thật Để chạy ứng dụng mượt mà không tốn RAM máy tính, tiến hành cấu hình điện thoại thật qua các bước:
+Mở Cài đặt điện thoại --> Thông tin phần mềm --> Ấn 7 lần vào Số hiệu bản dựng để mở Chế độ nhà phát triển.
+- Vào Tùy chọn nhà phát triển --> Bật công tắc Gỡ lỗi USB (USB Debugging).
+- Cắm cáp kết nối máy tính và chọn "Luôn cho phép từ máy tính này".
+# <img width="375" height="232" alt="image" src="https://github.com/user-attachments/assets/34ae61e0-5528-48b8-9ae9-c78eede04582" />
+
+-------------------------
+Bấm nút Run chạy ứng dụng. Khi màn hình chính vừa hiện lên trên điện thoại thật Màn hình hiển thị đúng Họ tên, MSSV của bạn và load thành công dữ liệu từ file văn bản trong Assets
+-------------------------
+
+# <img width="2000" height="1200" alt="image" src="https://github.com/user-attachments/assets/a12ae0c6-f0a9-4c49-aac7-32ce9a64115a" />
+** B5: 
+LẬP TRÌNH THUẬT TOÁN GIẢI TOÁN VÀ ĐÓNG GÓI JSON GỬI API MẠNG
+- Hướng dẫn thực hiện: Mở file GiaiToanActivity.java.
+- Code này chịu trách nhiệm lấy giá trị a, b, giải phương trình bậc nhất, đóng gói MSSV K225480106076 cùng kết quả vào chuỗi cấu trúc JSON, sử dụng thư viện OkHttpClient để POST lên server của thầy.
+
+## Mã nguồn hoàn chỉnh GiaiToanActivity.java:
+
+package com.example.baitaplon;
+
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import androidx.appcompat.app.AppCompatActivity;
+import org.json.JSONObject;
+import java.io.IOException;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+
+public class GiaiToanActivity extends AppCompatActivity {
+    private EditText edtA, edtB, edtTen;
+    private TextView tvKetQua;
+    private final OkHttpClient client = new OkHttpClient();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_giai_toan);
+
+        edtA = findViewById(R.id.edt_nhap_a);
+        edtB = findViewById(R.id.edt_nhap_b);
+        edtTen = findViewById(R.id.edt_nhap_ten);
+        tvKetQua = findViewById(R.id.tv_ket_qua);
+        Button btnTinh = findViewById(R.id.btn_tinh_toan);
+
+        btnTinh.setOnClickListener(v -> thuatToanVaApi());
+    }
+
+    private void thuatToanVaApi() {
+        try {
+            double a = Double.parseDouble(edtA.getText().toString());
+            double b = Double.parseDouble(edtB.getText().toString());
+            String name = edtTen.getText().toString();
+            String mssv = "K225480106076"; // Gắn MSSV của bạn
+
+            // Thuật toán giải toán
+            String ketLuan;
+            String nghiemStr;
+            if (a == 0) {
+                if (b == 0) {
+                    ketLuan = "Vô số nghiệm";
+                    nghiemStr = "Mọi x";
+                } else {
+                    ketLuan = "Vô nghiệm";
+                    nghiemStr = "Không có";
+                }
+            } else {
+                double x = -b / a;
+                ketLuan = "Có nghiệm";
+                nghiemStr = String.valueOf(x);
+            }
+
+            tvKetQua.setText(ketLuan + " | x = " + nghiemStr);
+
+            // Đóng gói cấu trúc JSON gửi API theo tài liệu
+            JSONObject jsonPayload = new JSONObject();
+            jsonPayload.put("app_by", mssv);
+
+            JSONObject jsonInput = new JSONObject();
+            jsonInput.put("a", a);
+            jsonInput.put("b", b);
+            jsonInput.put("c", 0);
+            jsonInput.put("name", name);
+            jsonPayload.put("input", jsonInput);
+
+            JSONObject jsonOutput = new JSONObject();
+            jsonOutput.put("ketluan", ketLuan);
+            jsonOutput.put("abc", "xyz");
+            jsonOutput.put("nghiem", nghiemStr);
+            jsonPayload.put("output", jsonOutput);
+
+            // Thực thi kết nối mạng
+            MediaType JSON = MediaType.get("application/json; charset=utf-8");
+            RequestBody body = RequestBody.create(jsonPayload.toString(), JSON);
+            Request request = new Request.Builder()
+                    .url("https://k58kmt.tdh.io.vn/api")
+                    .post(body)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    runOnUiThread(() -> tvKetQua.append("\n[API] Gửi thất bại!"));
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                    if (response.isSuccessful()) {
+                        String resData = response.body().string();
+                        runOnUiThread(() -> tvKetQua.append("\n[API] Trả về: " + resData));
+                    }
+                }
+            });
+        } catch (Exception e) {
+            Toast.makeText(this, "Vui lòng nhập số hợp lệ!", Toast.LENGTH_SHORT).show();
+        }
+    }
+}
+
+--------------------------------
+Từ màn hình chính bấm mở màn hình Giải toán. Nhập thử các số (Ví dụ: a = 4, b = 3), nhập tên rồi bấm tính toán. 
+Đợi khoảng 1-2 giây khi dòng thông báo màu đen hiện chữ thành công: [API] Trả về: {"ok":1, "id":...} 
+--------------------------------
+
+# <img width="2000" height="1200" alt="image" src="https://github.com/user-attachments/assets/98ddc04d-fe49-442e-b6bc-56a76be41aab" />
+** B6: 
+LẬP TRÌNH NHÚNG TRÌNH DUYỆT WEB ĐỘNG TRUYỀN THAM SỐ MSSV
+Hướng dẫn thực hiện: <br>
+- Mở file WebViewActivity.java. Viết mã nguồn kích hoạt JavaScript cho WebView, nạp đường dẫn URL động bằng cách tự động ghép nối chuỗi tham số chứa mã sinh viên sinh viên của bạn (?masv=K225480106076) gửi lên server.
+
+## Mã nguồn hoàn chỉnh WebViewActivity.java:
+
+package com.example.baitaplon;
+
+import android.os.Bundle;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.appcompat.app.AppCompatActivity;
+
+public class WebViewActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_web_view);
+
+        WebView webView = findViewById(R.id.my_webview);
+        
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true); // Bật thực thi mã JS
+        webView.setWebViewClient(new WebViewClient()); // Ép chạy trong app thay vì mở Chrome ngoài
+
+        // Nối chuỗi mã số sinh viên vào đường dẫn web
+        String myMssv = "K225480106076"; 
+        String url = "https://k58kmt.tdh.io.vn?masv=" + myMssv;
+
+        webView.loadUrl(url);
+    }
+}
+
+-------------------------
+Quay lại màn hình chính, bấm chọn nút mở màn hình WebView. Khi màn hình load xong dữ liệu thô (JSON) phản hồi từ hệ thống của thầy, hiển thị rõ ràng thông tin họ tên Nguyễn Lam Sơn cùng mã số sinh viên 
+-------------------------
+
+# <img width="2000" height="1200" alt="image" src="https://github.com/user-attachments/assets/ddfa1f08-4dae-4c4f-968b-313b89c1d8ab" />
+# PHẦN 4: Tóm tắt lý thuyết toàn diện, cô đọng và hệ thống cho toàn bộ các nội dung xuất hiện trong Bài Tập Lớn
+## 1: TÓM TẮT LÝ THUYẾT NỀN TẢNG MIT APP INVENTOR (LẬP TRÌNH KÉO THẢ)
+## 1.1 Quy trình thiết kế và cấu hình giao diện
+- Thanh công cụ (Palette): Là kho lưu trữ chứa toàn bộ các đối tượng giao diện được định nghĩa sẵn. Quy trình thiết kế dựa trên thao tác chọn và kéo - thả đối tượng từ Palette vào màn hình mô phỏng (Viewer).
+
+- Bảng thuộc tính (Properties): Là nơi quản lý các thông số kỹ thuật (Kích thước, Màu sắc, Văn bản hiển thị). Việc thay đổi thuộc tính nhằm mục đích cá nhân hóa hiển thị và xác định trạng thái ban đầu của đối tượng.
+
+## 1.2. Bản chất, ưu và nhược điểm của lập trình khối (Block)
+** Bản chất: Chuyển đổi tư duy lập trình từ dạng văn bản (Text-based) sang dạng hình khối trực quan (Visual-based). Các hàm xử lý, biến số, cấu trúc logic if-else hay vòng lặp được đóng gói thành các mảnh ghép đồ họa. Khi lắp ghép các khối khớp nối với nhau, hệ thống tự động biên dịch sang mã máy.
+
+- Ưu điểm: Loại bỏ hoàn toàn lỗi cú pháp (như thiếu dấu ;, sai dấu {}, viết sai từ khóa lệnh); phát triển ứng dụng cực nhanh.
+
+- Nhược điểm: Bị giới hạn khả năng can thiệp sâu vào nhân hệ điều hành; khó tối ưu hiệu năng; khi logic app lớn thì giao diện block cực kỳ rối và khó gỡ lỗi (debug); file .apk đầu ra bị nặng.
+
+- Tính năng Cái balo (Backpack): Đóng vai trò là bộ nhớ tạm (Clipboard) toàn cục, cho phép sao chép một cụm logic khối phức tạp từ màn hình này để mang sang tái sử dụng ở màn hình khác một cách nhanh chóng.
+
+## 2 : TÓM TẮT LÝ THUYẾT KIẾN TRÚC ỨNG DỤNG ANDROID STUDIO
+## 2.1. Vai trò của tệp định cấu hình AndroidManifest.xml
+** Bản chất: File cấu hình tối cao nằm tại gốc của mọi dự án Android. Nó khai báo sơ đồ kiến trúc tổng thể cho hệ điều hành hiểu, bao gồm: tên gói (package), danh sách màn hình (Activity), biểu tượng (icon), và đặc biệt là danh sách các quyền hạn hệ thống.
+
+Cơ chế xin quyền kết nối Internet: Android sử dụng cơ chế bảo mật cô lập (Sandbox). Ứng dụng mặc định khi cài đặt không được tự ý truy cập Internet để bảo vệ dữ liệu người dùng. Để kích hoạt, lập trình viên phải khai báo tường minh quyền truy cập mạng (INTERNET, ACCESS_NETWORK_STATE) và quyền truyền tải HTTP thô (usesCleartextTraffic="true").
+
+## 2.2. Vòng đời ứng dụng Android (Activity Lifecycle) và hàm onCreate
+Vòng đời ứng dụng: Hoạt động của một Activity di chuyển liên tục qua một chuỗi các trạng thái được giám sát nghiêm ngặt bởi hệ thống (Khởi tạo, Hiển thị, Tạm dừng, Dừng hẳn, Bị hủy) nhằm tối ưu dung lượng RAM và điện năng (Pin).
+
+** Bản chất hàm onCreate(): Khi Activity được kích hoạt, hệ điều hành Android luôn gọi hàm callback onCreate() đầu tiên. Đây là "điểm khởi thủy" bắt buộc để nạp cấu trúc layout XML lên bộ nhớ (setContentView), ánh xạ thành phần giao diện vào code Java (findViewById), và thiết lập các hàm lắng nghe sự kiện ban đầu.
+
+## 2.3. Nguyên lý tài nguyên chuỗi (strings.xml) và lỗi Hardcode text
+- Hardcode text: Việc viết trực tiếp chữ hiển thị bằng văn bản thô vào code giao diện XML (Ví dụ: android:text="Nguyễn Lam Sơn") gọi là Hardcode. Tác hại là làm ứng dụng bị thắt nút cổ chai, rất khó khăn và dễ gây sai sót khi cần chỉnh sửa, bảo trì thông tin.
+
+- Tác dụng của strings.xml: Gom toàn bộ văn bản vào một tệp quản lý tập trung.
+
+- Cú pháp tham chiếu: Trong file XML gọi @string/tên_định_danh, trong mã Java gọi R.string.tên_định_danh (hoặc getString(...)).
+
+- Cơ chế tự động hóa của OS: Hệ điều hành Android tích hợp sẵn công nghệ tự động quét file này dựa trên Ngôn ngữ hệ thống (Language) và Vị trí địa lý (Location) để tự động dịch thuật giao diện mà lập trình viên hoàn toàn không cần chỉnh sửa lại code Java.
+
+## 3: TÓM TẮT LÝ THUYẾT TRUY XUẤT DỮ LIỆU & GIAO TIẾP MẠNG
+## 3.1. Cơ chế lưu trữ offline với thư mục Assets
+** Bản chất: Toàn bộ các file nằm trong Assets sẽ được nén đi kèm trực tiếp vào bên trong bộ cài đặt ứng dụng (.apk).
+
+- Cú pháp truy cập: Sử dụng AssetManager qua câu lệnh getAssets().open("tên_file.txt").
+
+- Lợi ích: Ứng dụng có thể truy xuất và đọc hiểu thông tin một cách tức thì, hoàn toàn độc lập và không phụ thuộc vào mạng Internet (Ngoại tuyến - Offline).
+
+- Ứng dụng: Làm app cẩm nang offline, tài liệu hướng dẫn tĩnh, bộ từ điển tra cứu nhanh, dữ liệu cấu hình game đồ họa tĩnh.
+
+## 3.2. Giao thức kết nối mạng API và định dạng JSON thời gian thực
+- API (Application Programming Interface): Cổng dịch vụ chuẩn hóa cho phép ứng dụng di động gửi dữ liệu lên máy chủ và đồng bộ nhận phản hồi ngược lại.
+
+- JSON (JavaScript Object Notation): Là định dạng chuẩn quốc tế dùng để đóng gói dữ liệu dưới dạng cặp Khóa (Key) : Giá trị (Value) rất gọn nhẹ, giúp truyền tải dữ liệu qua môi trường Internet nhanh chóng, đồng bộ mượt mà giữa các nền tảng lập trình khác nhau.
+
+- Cấu trúc JSON lồng nhau gửi lên máy chủ Bộ môn: Được đóng gói nghiêm ngặt thành 3 phần:
+
+- app_by: Chứa chuỗi định danh duy nhất của bạn (Mã số sinh viên K225480106076) để server phân loại bài làm.
+
+- input: Khối đối tượng con chứa các tham số đầu vào nhập từ giao diện di động (hệ số a, hệ số b, hệ số c, tên sinh viên name).
+
+- output: Khối đối tượng con chứa kết quả xử lý của thuật toán trên điện thoại (trạng thái ketluan và chuỗi nghiệm phương trình nghiem).
+# PHẦN 5: TỔNG KẾT QUÁ TRÌNH THỰC HIỆN BÀI TẬP LỚN
+- Trải qua quá trình nghiên cứu, tự lực giải quyết vấn đề và triển khai thực tế hệ thống phần mềm Bài tập lớn môn học Phát triển ứng dụng trên thiết bị di động (TEE0419), em đã đúc kết được những giá trị kiến thức sâu sắc sau:
+## 1. Về mặt nhận thức lý thuyết và bản chất công nghệ
+- Hiểu sâu sắc về cấu trúc nền tảng: Em đã hiểu rõ vai trò điều phối tối cao của file AndroidManifest.xml trong kiến trúc hệ điều hành Android. Từ đó biết cách phân quyền hệ thống một cách an toàn và quản lý luồng cấu trúc Activity khoa học.
+
+- Tư duy quản trị tài nguyên chuyên nghiệp: Việc loại bỏ hoàn toàn mã độc lập (lỗi hardcode) và chuyển dịch toàn bộ sang tệp tài nguyên hệ thống strings.xml đã giúp em nắm vững tư duy đa ngôn ngữ hóa và nội địa hóa ứng dụng di động theo quy chuẩn công nghiệp.
+
+- Làm chủ quy trình vòng đời: Hiểu được dòng chảy trạng thái thông qua các hàm callback vòng đời (Lifecycle), từ đó tối ưu hóa được vùng nhớ bộ đệm, giải phóng tài nguyên nền và ngăn chặn triệt để hiện tượng tràn bộ nhớ hay tiêu tốn năng lượng pin thiết bị một cách lãng phí.
+
+## 2. Về mặt kỹ năng thực hành và giải quyết vấn đề thực tế
+- Khai thác dữ liệu Offline & Online linh hoạt: Em đã biết cách thiết lập cấu trúc và truy xuất dữ liệu phi cấu trúc ngoại tuyến thông qua hệ thống Assets phục vụ các kịch bản ngoại tuyến. Song song với đó, em đã làm chủ kỹ năng kết nối, đóng gói dữ liệu thời gian thực theo cấu trúc đối tượng JSON phức tạp lồng nhau nhằm trao đổi thông tin đồng bộ với hệ thống máy chủ mạng (API) bên ngoài thông qua phương thức mạng POST.
+
+- Làm chủ quy trình kiểm thử và gỡ lỗi trên máy thật: Thay vì lạm dụng máy ảo tiêu tốn tài nguyên máy tính, em đã hoàn toàn làm chủ kỹ năng cấu hình môi trường phát triển (Developer Options, USB Debugging) trên thiết bị di động vật lý. Kỹ năng này giúp em tiếp cận sát nhất với trải nghiệm thực tế của người dùng cuối, biết cách theo dõi bảng log và xử lý ngoại lệ bất đồng bộ hiệu quả khi có sự cố mất kết nối mạng.
+
+## Lời cảm ơn: Bài tập lớn này không chỉ giúp em hoàn thành nghĩa vụ môn học, mà quan trọng hơn cả, nó đã đặt những viên gạch nền móng vững chắc giúp em định hình tư duy lập trình di động chuyên nghiệp, sẵn sàng cho việc phát triển các sản phẩm phần mềm thực tế trong tương lai.
+
+
+
+
 
 
 
