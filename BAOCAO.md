@@ -164,18 +164,38 @@ Mở Android Studio -> Chọn New Project -> Empty Views Activity
 ## 2.1 AndroidManifest.xml là gì?
 - Nó là "giấy khai sinh" và là bảng cấu hình của ứng dụng. Mọi Activity bạn tạo ra, mọi quyền truy cập hệ thống đều phải khai báo ở đây.
 - xin quyền dùng Internet (phục vụ cho tính năng WebView), gõ dòng lệnh này vào # <uses-permission android:name="android.permission.INTERNET" />
-# <img width="1452" height="981" alt="image" src="https://github.com/user-attachments/assets/29c74ac0-3217-4b67-9690-b49291edc6f5" />
+# <img width="1107" height="1000" alt="image" src="https://github.com/user-attachments/assets/488e213b-0bad-427f-8158-a2407cfd78b1" />
 ## 2.2 Vòng đời ứng dụng & File Code Java
 - Ứng dụng Android viết bằng ngôn ngữ Java. Nó có một vòng đời trải qua nhiều trạng thái (mở app, ẩn xuống nền, tắt app). Hàm onCreate luôn có sẵn khi tạo project vì đây là bước đầu tiên trong vòng đời ứng dụng khi màn hình được tạo ra; nó chịu trách nhiệm khởi tạo các biến và liên kết giao diện người dùng. <br>
 - Mở thư mục: MainActivity.java
 - mọi code tương tác cơ bản ở giai đoạn đầu sẽ viết bên trong hàm này: onCreate
-# <img width="1397" height="561" alt="image" src="https://github.com/user-attachments/assets/ebc30cd6-9b41-4797-bbe3-5e123964d438" />
+# <img width="1108" height="1078" alt="image" src="https://github.com/user-attachments/assets/be2fbbcf-27bc-49bd-965c-c123dfc26fe6" />
 ## 2.3. Thiết kế giao diện (Layout) & Tránh Hardcode
 - Giao diện được mô tả bằng file XML nằm trong thư mục res/layout. Để tránh hardcode (viết thẳng giá trị chết vào giao diện), bạn phải lưu các thuộc tính text vào một nơi khác rồi tham chiếu tới nó <br>
 ** Ưu điểm của việc này là hệ điều hành (OS) sẽ tự động lấy giá trị tham chiếu theo Location (Vị trí), Language (Ngôn ngữ), Theme (Chủ đề) của người dùng. Việc hỗ trợ auto này giúp app tự động chuyển đổi ngôn ngữ hoặc giao diện sáng/tối mà lập trình viên không cần viết thêm code <br>
 - Mở file res/values/strings.xml: Thêm một dòng: <string name="loi_chao">Xin chào bạn</string> <br>
-# <img width="822" height="341" alt="image" src="https://github.com/user-attachments/assets/70d11603-979f-4bbc-9171-9e9df6f75c0f" />
+# <img width="1265" height="458" alt="image" src="https://github.com/user-attachments/assets/200409e2-65d3-49d3-a257-8961d11cbefe" />
 - Tiếp theo, mở file giao diện res/layout/activity_main.xml: Khi tạo một chữ hiển thị, thay vì viết android:text="Xin chào bạn" (đây là hardcode),viết cú pháp tham chiếu: android:text="@string/loi_chao" <br>
-# <img width="1920" height="1080" alt="image" src="https://github.com/user-attachments/assets/a3b79edb-5e0d-4059-a82b-b89d1334b4c1" />
+# <img width="1091" height="776" alt="image" src="https://github.com/user-attachments/assets/fdd0b032-6d7c-437a-87d4-d04cf5bbaf5d" />
+## Bước 2.4: Event (sự kiện người dùng)
+- Khi click vào Button, ta viết code xử lý. Có 2 cách:
+- Gắn trực tiếp trong Java bằng setOnClickListener.
+- Khai báo trong XML android:onClick="tenHam" rồi viết hàm trong Java
+# <img width="1040" height="382" alt="image" src="https://github.com/user-attachments/assets/760624a6-9041-4ae5-987d-e936b8446d48" />
+## 2.5. AssetsTạo folder: 
+- Chuột phải vào app/src/main → New → Directory → đặt tên assets.
+- Thêm file: Copy file data.json hoặc data.txt vào folder assets.
+** Mở file Java: Trong MainActivity.java, thêm:
+- Mục tiêu: Thêm dữ liệu offline.
+# <img width="1077" height="978" alt="image" src="https://github.com/user-attachments/assets/129348c9-792c-4293-9f48-e178a1482d0d" />
+# <img width="1117" height="231" alt="image" src="https://github.com/user-attachments/assets/327daeaa-7fb9-451f-8580-14c9df4c1224" />
+# PHẦN 3: TẠO THÊM 2 ACTIVITY MỚI ( ACTIVITY 2, ACTIVITY3 )
+- Mặc định khi tạo dự án, đã có sẵn màn hình thứ nhất là MainActivity. Bây giờ ta cần tạo thêm Activity 2 và Activity 3
+-Cách làm: Chuột phải vào thư mục chứa code Java của bạn (ví dụ: com.example.baitaplon)
+--> Chọn New --> Activity --> Empty Views Activity.
+- Tạo cái thứ nhất đặt tên là: GiaiToanActivityLàm tương tự tạo cái thứ hai đặt tên là: WebViewActivity
+BƯỚC 1: CHI TIẾT HƯỚNG DẪN TỪNG ACTIVITY (CODE & LAYOUT)
+- 1. ACTIVITY 1: MÀN HÌNH GIỚI THIỆU (ABOUT SCREEN)
+
 
 
